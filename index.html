@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK's Pokedex</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <script type="module" src="./app.js" defer></script>
+</head>
+
+<body>
+    <div class="app-wrapper">
+        <!-- Pokedex Shell Header -->
+        <header class="pokedex-header">
+            <div class="pokedex-lights" aria-hidden="true">
+                <div class="sensor-lens sensor-pokeball" title="3D Pokéball">
+                    <img src="./assets/pokeball_3d.png" alt="3D Pokéball" class="pokeball-3d-img">
+                </div>
+                <div class="indicator-leds">
+                    <span class="led led-red" title="Status Red"></span>
+                    <span class="led led-yellow" title="Status Yellow"></span>
+                    <span class="led led-green" title="Status Green"></span>
+                </div>
+            </div>
+
+            <div class="header-brand">
+                <h1 class="app-title">PK's POKÉDEX</h1>
+
+            </div>
+
+            <!-- Search Form -->
+            <form id="searchForm" class="search-form" role="search">
+                <label for="searchInput" class="visually-hidden">Search Pokémon by name or Pokédex number</label>
+                <div class="search-box">
+                    <svg class="search-icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="searchInput" class="search-input"
+                        placeholder="Search name or ID (e.g., Pikachu, 25)" autocomplete="off">
+                    <button type="submit" class="search-submit-btn" aria-label="Search">
+                        <span class="screen-button-label">Go</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Search Filter Bar: Type Filter Dropdown -->
+            <div class="search-filter-bar">
+                <label for="typeFilter" class="filter-label">Filter by Type:</label>
+                <select id="typeFilter" class="type-filter-select" aria-label="Filter Pokémon by elemental type">
+                    <option value="">Select an elemental type...</option>
+                    <option value="all">All Pokémon (1–1025)</option>
+                    <option value="water">Water 💧</option>
+                    <option value="fire">Fire 🔥</option>
+                    <option value="grass">Grass 🌿</option>
+                    <option value="electric">Electric ⚡</option>
+                    <option value="flying">Air / Flying 🌪️</option>
+                    <option value="ice">Ice ❄️</option>
+                    <option value="fighting">Fighting 🥊</option>
+                    <option value="poison">Poison ☠️</option>
+                    <option value="ground">Ground 🏜️</option>
+                    <option value="psychic">Psychic 🔮</option>
+                    <option value="bug">Bug 🐛</option>
+                    <option value="rock">Rock 🪨</option>
+                    <option value="ghost">Ghost 👻</option>
+                    <option value="dragon">Dragon 🐉</option>
+                    <option value="dark">Dark 🌑</option>
+                    <option value="steel">Steel ⚙️</option>
+                    <option value="fairy">Fairy ✨</option>
+                    <option value="normal">Normal ⚪</option>
+                </select>
+            </div>
+
+            <!-- Quick Suggestion Chips -->
+            <div class="quick-chips-wrapper" aria-label="Popular Pokémon searches">
+                <span class="chips-label">Popular:</span>
+                <div class="quick-chips">
+                    <button type="button" class="chip-btn" data-pokemon="pikachu">Pikachu</button>
+                    <button type="button" class="chip-btn" data-pokemon="charizard">Charizard</button>
+                    <button type="button" class="chip-btn" data-pokemon="gengar">Gengar</button>
+                    <button type="button" class="chip-btn" data-pokemon="mewtwo">Mewtwo</button>
+                    <button type="button" class="chip-btn" data-pokemon="eevee">Eevee</button>
+                    <button type="button" class="chip-btn" data-pokemon="snorlax">Snorlax</button>
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="nav-controls">
+                <button id="prevBtn" class="nav-btn" aria-label="Previous Pokémon">
+                    <span class="nav-btn-label">Prev</span>
+                </button>
+                <button id="randomBtn" class="nav-btn nav-btn-secondary" aria-label="Random Pokémon">
+                    <span class="nav-btn-label">Random</span>
+                </button>
+                <button id="nextBtn" class="nav-btn" aria-label="Next Pokémon">
+                    <span class="nav-btn-label">Next</span>
+                </button>
+            </div>
+
+            <!-- System Info -->
+            <div class="system-info">
+                <!---- <div class="system-id">
+                    <span>System ID:</span>
+                    <span id="systemId" class="system-id-value">---</span>
+                </div>
+                <div class="system-status">
+                    <span>Status:</span>
+                    <span id="systemStatus" class="system-status-value">Ready</span>
+                </div>-->
+            </div>
+        </header>
+
+        <!-- Pokédex Main Screen -->
+        <main class="main-display" id="mainDisplay">
+            <!-- Type Filter Results Section -->
+            <section id="typeResultsSection" class="type-results-section" hidden aria-label="Filtered Pokémon by Type">
+                <div class="type-results-header">
+                    <div class="type-header-title-group">
+                        <span id="typeBadgeIcon" class="type-badge-icon" aria-hidden="true">💧</span>
+                        <h2 id="typeResultsTitle" class="type-results-title">Water Pokémon</h2>
+                        <span id="typeResultsCount" class="type-results-count">(0 Pokémon)</span>
+                    </div>
+                    <button type="button" id="closeTypeResultsBtn" class="close-type-results-btn"
+                        aria-label="Close filtered view">✕ Clear Filter</button>
+                </div>
+                <div id="typeResultsList" class="type-results-grid">
+                    <!-- Populated dynamically with cards -->
+                </div>
+            </section>
+
+            <!-- Live Status & Feedback Area -->
+            <div id="statusArea" class="status-area" aria-live="polite">
+                <!-- Loading State Indicator -->
+                <div id="loadingIndicator" class="loading-state" hidden>
+                    <div class="pokeball-spinner" aria-hidden="true">
+                        <div class="pokeball-top"></div>
+                        <div class="pokeball-band"></div>
+                        <div class="pokeball-button"></div>
+                        <div class="pokeball-bottom"></div>
+                    </div>
+                    <p class="loading-text">Searching Pokédex...</p>
+                </div>
+
+                <!-- Error Message Card-->
+                <div id="errorMessage" class="error-card" hidden role="alert">
+                    <div class="error-icon" aria-hidden="true">⚠️</div>
+                    <div class="error-content">
+                        <h2 class="error-title">Search Failed</h2>
+                        <p id="errorText" class="error-text">Pokémon not found. Check the name or Pokédex number and try
+                            again.</p>
+                        <p class="error-hint">Tip: Check spelling or try searching by Pokédex number (1 to 1025).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome / Empty State Card -->
+            <section id="welcomeState" class="welcome-card" aria-label="Pokédex Instructions">
+                <div class="welcome-graphic" aria-hidden="true">
+                    <img src="./assets/pokeball.svg" alt="" class="welcome-pokeball-img"
+                        onerror="this.src='./assets/pokeball.png'">
+                </div>
+                <h2 class="welcome-title">Ready to Explore the Pokédex</h2>
+                <p class="welcome-description">
+                    Enter any Pokémon's name or National Pokédex number (1 to 1025) above to access complete
+                    biological data, battle stats, abilities, and species descriptions straight from the PokéAPI.
+                </p>
+                <div class="welcome-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">🔍</span>
+                        <span>1025 Pokémon</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <span>Animated Base Stats</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🔊</span>
+                        <span>Authentic Audio Cries</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Pokémon Detail Card -->
+            <article id="pokemonCard" class="pokemon-card" hidden aria-label="Pokémon Details">
+                <!-- Card Top Nav Bar -->
+                <div class="card-navigation">
+                    <button type="button" id="backToTypeResultsBtn" class="nav-btn back-btn" hidden
+                        title="Back to filtered list">
+                        <span aria-hidden="true">←</span>
+                        <span id="backToTypeLabel">Back to List</span>
+                    </button>
+
+                    <button type="button" id="prevPokemonBtn" class="nav-btn prev-btn" title="View previous Pokémon"
+                        aria-label="Previous Pokémon">
+                        <span aria-hidden="true">‹</span>
+                        <span id="prevBtnLabel" class="nav-btn-label">Prev</span>
+                    </button>
+
+                    <div class="nav-id-badge">
+                        <span id="pokemonId" class="pokemon-id">#0001</span>
+                    </div>
+
+                    <button type="button" id="nextPokemonBtn" class="nav-btn next-btn" title="View next Pokémon"
+                        aria-label="Next Pokémon">
+                        <span id="nextBtnLabel" class="nav-btn-label">Next</span>
+                        <span aria-hidden="true">›</span>
+                    </button>
+                </div>
+
+                <div class="card-body">
+                    <!-- Left Column: Visual Showcase -->
+                    <div class="card-visual-column">
+                        <div class="artwork-container" id="artworkContainer">
+                            <div class="artwork-backdrop" id="artworkBackdrop" aria-hidden="true"></div>
+                            <img id="pokemonImage" class="pokemon-image" src="" alt="" loading="lazy">
+                        </div>
+
+                        <!-- Interactive Sprite Controls -->
+                        <div class="sprite-controls">
+                            <button type="button" id="shinyToggleBtn" class="control-pill-btn" aria-pressed="false"
+                                title="Toggle Shiny form">
+                                <span class="btn-icon">✨</span>
+                                <span id="shinyBtnLabel">Shiny</span>
+                            </button>
+                            <button type="button" id="playCryBtn" class="control-pill-btn" title="Play Pokémon Cry"
+                                aria-label="Play Pokémon Cry">
+                                <span class="btn-icon">🔊</span>
+                                <span>Cry</span>
+                            </button>
+                        </div>
+
+                        <!-- Type Badges Container -->
+                        <div id="pokemonTypes" class="types-container" aria-label="Pokémon Types">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Info, Metrics & Tabs -->
+                    <div class="card-data-column">
+                        <!-- Identity Header -->
+                        <header class="pokemon-identity">
+                            <h2 id="pokemonName" class="pokemon-name">Pokémon Name</h2>
+                            <p id="pokemonGenus" class="pokemon-genus">Seed Pokémon</p>
+                        </header>
+
+                        <!-- Flavor Text / Description -->
+                        <div class="flavor-box">
+                            <p id="pokemonDescription" class="flavor-text">
+                                Description text will appear here.
+                            </p>
+                        </div>
+
+                        <!-- Tabs -->
+                        <div class="tabs" role="tablist">
+                            <button type="button" class="tab-btn active" data-tab="about" role="tab"
+                                aria-selected="true" aria-controls="tabAbout">About</button>
+                            <button type="button" class="tab-btn" data-tab="stats" role="tab" aria-selected="false"
+                                aria-controls="tabStats">Stats</button>
+                            <button type="button" class="tab-btn" data-tab="evolution" role="tab" aria-selected="false"
+                                aria-controls="tabEvolution">Evolution</button>
+                        </div>
+
+                        <!-- Tab 1: About -->
+                        <div class="tab-content active" id="tabAbout" role="tabpanel">
+                            <!-- Bio Attributes Grid -->
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <span class="metric-label">Height</span>
+                                    <span id="pokemonHeight" class="metric-value">0.7 m</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">Weight</span>
+                                    <span id="pokemonWeight" class="metric-value">6.9 kg</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">Base Exp</span>
+                                    <span id="pokemonBaseExp" class="metric-value">64</span>
+                                </div>
+                            </div>
+
+                            <!-- Abilities Section -->
+                            <div class="abilities-section">
+                                <h3 class="section-heading">Abilities</h3>
+                                <div id="pokemonAbilities" class="abilities-container">
+                                    <!-- Populated dynamically via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Stats -->
+                        <div class="tab-content" id="tabStats" role="tabpanel">
+                            <!-- Base Stats Panel -->
+                            <div class="stats-section">
+                                <div class="stats-header">
+                                    <h3 class="section-heading">Base Stats</h3>
+                                    <span id="pokemonTotalStats" class="total-stats-pill">Total: 0</span>
+                                </div>
+                                <div id="pokemonStatsList" class="stats-list" role="list">
+                                    <!-- Populated dynamically with visual progress bars via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 3: Evolution -->
+                        <div class="tab-content" id="tabEvolution" role="tabpanel">
+                            <div class="evolution-section">
+                                <h3 class="section-heading">Evolution Line</h3>
+                                <div id="evolutionChain" class="evolution-chain">
+                                    <!-- Populated dynamically via JS -->
+                                </div>
+                                <div id="evolutionChainPlaceholder" class="evolution-placeholder" hidden>
+                                    <span class="placeholder-text">No evolution data available for this Pokémon.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </main>
+    </div>
+</body>
+
+</html>

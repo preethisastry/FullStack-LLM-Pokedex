@@ -27,9 +27,9 @@ A modern, responsive, and feature-rich Pokédex web application built with vanil
 ## 📁 Project Structure
 
 ```
-├── index.html        # Semantic HTML5 layout with accessible tabs and ARIA labels
-├── style.css         # Complete Pokédex design system, animations, and responsive styles
-├── app.js            # Modular ES application logic, PokéAPI controllers, and event listeners
+├── index.html        # Semantic HTML5 layout with accessible tabs 
+├── style.css         # Complete Pokedex design system, animations, and responsive styles
+├── app.js            # Application logic, PokéAPI controllers, and event listeners
 ├── variables.js      # Configuration constants, stat definitions, and type color palettes
 ├── assets/           # 3D Pokéball renders, SVG icons, and visual graphics
 └── README.md         # Project documentation
